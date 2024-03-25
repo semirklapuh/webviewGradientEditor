@@ -1,0 +1,177 @@
+html {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.wrapper {
+    width: 98%;
+    height: 98%;
+    display: flex;
+    flex-direction: column;
+}
+
+.preview_title {
+    margin-left: 5%;
+    margin-top: 1%;
+    font-size: smaller;
+    font-weight: bold;
+}
+
+.preview_wrapper {
+    width: 100%;
+    height: 25%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.preview_space {
+    width: 90%;
+    height: 100%;
+    border: 1px solid black;
+    border-radius: 20px;
+    margin-top: 5%;
+}
+
+.options_wrapper {
+    width: 100%;
+    height: 35%;
+    margin-top: 5%;
+    display: flex;
+    flex-direction: row;
+}
+
+.options_left {
+    height: 100%;
+    width: 70%;
+    border: 1px solid green;
+    overflow: auto;
+}
+
+.options_right {
+    height: 100%;
+    width: 30%;
+    border: 1px solid purple;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.result_wrapper {
+    border: 1px solid red;
+    width: 100%;
+    height: 25%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.result_title {
+    margin-left: 5%;
+    font-size: smaller;
+    font-weight: bold;
+}
+
+.result_preview {
+    border: 1px solid black;
+    height: 70%;
+    margin-top: 0.5%;
+    display: flex;
+    align-items: center;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+.color-picker {
+    width: 100%;
+}
+
+.gradient-result {
+    width: 100%;
+    height: 20%;
+    border: none;
+}
+
+.radio-container {
+    display: inline-block;
+    margin-right: 10px;
+    padding-left: 5%;
+}
+
+    .radio-container input[type="radio"] {
+        display: none; /* Hide the default radio button */
+    }
+
+    .radio-container label {
+        display: inline-block;
+        cursor: pointer;
+        position: relative;
+        padding-left: 25px; /* Adjust based on the size of the custom radio button */
+    }
+
+        .radio-container label:before {
+            content: "";
+            display: inline-block;
+            width: 16px; /* Size of the custom radio button */
+            height: 16px; /* Size of the custom radio button */
+            border: 1px solid #aaa;
+            border-radius: 50%; /* Make it round */
+            position: absolute;
+            left: 0;
+            top: 1px; /* Adjust vertically to center */
+        }
+
+    .radio-container input[type="radio"]:checked + label:before {
+        background-color: #ff8f0f; /* Change color when checked */
+    }
+
+    /* Optional: Styles for label text */
+    .radio-container label span {
+        margin-left: 5px;
+    }
+
+.select-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.select-container-label-container {
+    width: 30%;
+}
+
+.select-container-label {
+    padding-left: 5%;
+}
+
+.select-container-dropdown {
+    width: 60%;
+    margin-left: 5%;
+}
+
+.error_info {
+    padding-left: 2%;
+    padding-top: 0.5%;
+    color: red;
+    display: none;
+}

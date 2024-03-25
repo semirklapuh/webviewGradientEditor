@@ -40,7 +40,7 @@
             this.webView21.Dock = System.Windows.Forms.DockStyle.Fill;
             this.webView21.Location = new System.Drawing.Point(0, 0);
             this.webView21.Name = "webView21";
-            this.webView21.Size = new System.Drawing.Size(871, 606);
+            this.webView21.Size = new System.Drawing.Size(998, 699);
             this.webView21.Source = new System.Uri("file:///C:/Users/meshm/OneDrive/Desktop/B&R%20first%20task/backgroundGradient.htm" +
         "l", System.UriKind.Absolute);
             this.webView21.TabIndex = 0;
@@ -50,7 +50,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(871, 606);
+            this.ClientSize = new System.Drawing.Size(998, 699);
             this.Controls.Add(this.webView21);
             this.Name = "Form1";
             this.Text = "Form1";

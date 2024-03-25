@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="cssbackgroundGradient.css">
+</head>
+<body>
+
+    <div class="wrapper">
+        <span class="preview_title">Preview</span>
+        <div class="preview_wrapper"><div id="preview_spaceId" class="preview_space"></div></div>
+        <div class="options_wrapper">
+            <div class="options_left">
+                <table id="colorTable">
+                    <thead>
+                        <tr>
+                            <th>Color</th>
+                            <th>Color Stop</th>
+                            <th>Color Picker</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text" class="color-input" value="" onfocusout="updateColorInput(this)" onkeydown="updateColorInputEnter(this)"></td>
+                            <td><input type="number" min="0" max="100" value="0"></td>
+                            <td><input type="color" class="color-picker" onchange="updateColor(this)" value="#ff8f0f"></td>
+                            <td><button class="delete-button" onclick="deleteRow(this)">Delete</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="options_right">
+                <div class="select-container">
+                    <div class="select-container-label-container">
+                        <label class="select-container-label">Type</label>
+                    </div>
+                    <select id="dropdown1" class="select-container-dropdown">
+                        <option value="linear" selected>linear</option>
+                        <option value="radial">radial</option>
+                    </select>
+                </div>
+                <div class="select-container">
+                    <div class="select-container-label-container">
+                        <label class="select-container-label">Direction</label>
+                    </div>
+                    <select id="dropdown2" class="select-container-dropdown">
+                        <option value="to top" selected>To Top</option>
+                        <option value="to top right">To Top Right</option>
+                        <option value="to right">To Right</option>
+                        <option value="to bottom right">To Bottom Right</option>
+                        <option value="to bottom">To Bottom</option>
+                        <option value="to bottom left">To Bottom Left</option>
+                        <option value="to left">To Left</option>
+                        <option value="to top left">To Top Left</option>
+                    </select>
+                </div>
+                <div class="radio-container">
+                    <input type="radio" id="radioHex" name="options" value="hex" checked onchange="convertColorValues()">
+                    <label for="radioHex"><span>Hex</span></label>
+                </div>
+
+                <!-- Radio button with label -->
+                <div class="radio-container">
+                    <input type="radio" id="radioRgba" name="options" value="rgba" onchange="convertColorValues()">
+                    <label for="radioRgba"><span>rgba</span></label>
+                </div>
+                <button onclick="setOutputInputValue()">Click</button>
+            </div>
+        </div>
+        <div class="result_wrapper">
+            <span class="error_info" id="error_span">Wrong color input.</span>
+            <label class="result_title">Result</label>
+            <div class="result_preview">
+                <input type="text" id="outputInput" class="gradient-result" value="" readonly>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function addRow() {
+      var table = document.getElementById("colorTable").getElementsByTagName('tbody')[0];
+      var lastRow = table.rows[table.rows.length - 1];
+      var colorInput = lastRow.cells[0].getElementsByTagName('input')[0].value;
+
+      if (colorInput.trim() !== "") {
+        var newRow = table.insertRow(table.rows.length);
+        var cell1 = newRow.insertCell(0);
+        var cell2 = newRow.insertCell(1);
+        var cell3 = newRow.insertCell(2);
+        var cell4 = newRow.insertCell(3);
+
+        cell1.innerHTML = '<input type="text" class="color-input" value="" onfocusout="updateColorInput(this)" onkeydown="updateColorInputEnter(this)"">';
+        cell2.innerHTML = '<input type="number" min="0" max="100" value="0">';
+        cell3.innerHTML = '<input type="color" class="color-picker" onchange="updateColor(this)" value="#ff8f0f">';
+        cell4.innerHTML = '<button class="delete-button" onclick="deleteRow(this)">Delete</button>';
+      }
+    }
+
+    function updateColor(colorPicker) {
+      var radioButton = document.getElementById("radioRgba");
+      var row = colorPicker.closest('tr');
+      var colorInput = row.cells[0].getElementsByTagName('input')[0];
+
+      if (radioButton.checked) {
+        colorInput.value = convertColorToRGBA(colorPicker.value);
+      }else{
+        colorInput.value = colorPicker.value;
+      }
+
+        // Check if the color input is not empty, then add a new row
+        if (colorInput.value.trim() !== "") {
+            addRow();
+      }
+    }
+
+    function updateColorInput(colorInput) {
+      var radioButton = document.getElementById("radioRgba");
+      var row = colorInput.closest('tr');
+      var colorPicker = row.cells[2].getElementsByTagName('input')[0];
+      //colorPicker.value = colorInput.value;
+      if (radioButton.checked) {
+        if (!getAllColorInputValuesAndValidate()) {
+            document.getElementById("error_span").style.display = "block";
+            return;
+        }else{
+            document.getElementById("error_span").style.display = "none";
+        }
+        colorPicker.value = convertColorToHex(colorInput.value);
+      }else{
+        if (!getAllColorInputValuesAndValidate()) {
+            document.getElementById("error_span").style.display = "block";
+            return;
+        }else{
+            document.getElementById("error_span").style.display = "none";
+        }
+        colorPicker.value = colorInput.value;
+      }
+
+      // Check if the color input is not empty, then add a new row
+      if (colorInput.value.trim() !== "") {
+        addRow();
+      }
+    }
+
+    function updateColorInputEnter(colorInput) {
+        if(event.key === 'Enter') {
+        updateColorInput(colorInput);
+    }
+
+    }
+
+    function getColorsAsString() {
+      var table = document.getElementById("colorTable").getElementsByTagName('tbody')[0];
+      var rows = table.getElementsByTagName('tr');
+      var colors = [];
+      var colorStops = [];
+
+      for (var i = 0; i < rows.length; i++) {
+        var colorInput = rows[i].cells[0].getElementsByTagName('input')[0].value.trim();
+        var colorStopInput = rows[i].cells[1].getElementsByTagName('input')[0].value.trim();
+        if (colorInput !== "") {
+          colors.push(colorInput);
+          colorStops.push(colorStopInput);
+        }
+      }
+      var dropdown1 = document.getElementById("dropdown1");
+      var dropdown2 = document.getElementById("dropdown2");
+      var typeGradient = dropdown1.value;
+      var directionGradient = dropdown2.value;
+
+      var colorsWithStops = [];
+      for (let index = 0; index < colors.length; index++) {
+        var element = colors[index] + " " + colorStops[index] + "%";
+        colorsWithStops.push(element);
+      }
+
+      colorsWithStops.forEach(element => {
+        colorsWithStops.join(", ");
+      });
+
+      var gradientResult = `${typeGradient}-gradient(${directionGradient}, ${colorsWithStops})`;
+      var previewElement = document.getElementById("preview_spaceId");
+      previewElement.style.background = gradientResult;
+      return gradientResult;
+    }
+
+    function setOutputInputValue() {
+      var outputInput = document.getElementById("outputInput");
+      outputInput.value = getColorsAsString();
+      //document.getElementById("error_span").style.display = "block";
+    }
+
+    function updateDropdown2() {
+      var dropdown1 = document.getElementById("dropdown1");
+      var dropdown2 = document.getElementById("dropdown2");
+      var selectedValue = dropdown1.value;
+
+      // Clear existing options
+      dropdown2.innerHTML = "";
+
+      // Populate options based on selected value from dropdown1
+      switch (selectedValue) {
+        case "linear":
+          dropdown2.add(new Option("to top", "to top"));
+          dropdown2.add(new Option("to top right", "to top right"));
+          dropdown2.add(new Option("to right", "to right"));
+          dropdown2.add(new Option("to bottom right", "to bottom right"));
+          dropdown2.add(new Option("to bottom", "to bottom"));
+          dropdown2.add(new Option("to bottom left", "to bottom left"));
+          dropdown2.add(new Option("to left", "to left"));
+          dropdown2.add(new Option("to top left", "to top left"));
+          break;
+        case "radial":
+          dropdown2.add(new Option("circle at center", "circle at center"));
+          dropdown2.add(new Option("circle at center top", "circle at center top"));
+          dropdown2.add(new Option("circle at top left", "circle at top left"));
+          dropdown2.add(new Option("circle at top right", "circle at top right"));
+          dropdown2.add(new Option("circle at center bottom", "circle at center bottom"));
+          dropdown2.add(new Option("circle at left", "circle at left"));
+          dropdown2.add(new Option("circle at right", "circle at right"));
+          dropdown2.add(new Option("circle at bottom right", "circle at bottom right"));
+          dropdown2.add(new Option("circle at bottom left", "circle at bottom left"));
+          break;
+        default:
+          break;
+      }
+    }
+
+      // Listen for the change event on dropdown2
+  dropdown1.addEventListener("change", updateDropdown2);
+
+// Initial call to updateDropdown1 to populate dropdown1 based on the initial value of dropdown2
+updateDropdown2();
+
+function convertColorValues() {
+    var radioButton = document.getElementById("radioRgba");
+      var table = document.getElementById("colorTable");
+      var rows = table.getElementsByTagName("tr");
+
+      for (var i = 1; i < rows.length; i++) { // Start from index 1 to skip the header row
+        var colorCell = rows[i].getElementsByTagName("td")[0];
+        var colorInput = colorCell.querySelector(".color-input");
+        var colorValue = colorInput.value.trim(); // Get color value from input field
+
+        if (colorValue !== "" && radioButton.checked) {
+            var rgbaColor = convertColorToRGBA(colorValue);
+            colorInput.value = rgbaColor;
+        }else if (colorValue !== "") {
+            var rgbaColor = convertColorToHex(colorValue);
+            colorInput.value = rgbaColor;
+        }
+      }
+    }
+
+    function convertColorToRGBA(colorValue) {
+      var hex = colorValue.replace("#", "");
+      console.log("hex je" + hex);
+      var r = parseInt(hex.substring(0, 2), 16);
+      var g = parseInt(hex.substring(2, 4), 16);
+      var b = parseInt(hex.substring(4, 6), 16);
+      return "rgba(" + r + ", " + g + ", " + b + ", 1)";
+    }
+
+    function convertColorToHex(rgbaColor) {
+    // Extract RGBA components
+    var rgbaComponents = rgbaColor.match(/\d+/g);
+    var r = parseInt(rgbaComponents[0]);
+    var g = parseInt(rgbaComponents[1]);
+    var b = parseInt(rgbaComponents[2]);
+    var a = parseFloat(rgbaComponents[3]);
+
+    // Ensure values are within valid range
+    r = Math.min(255, Math.max(0, r));
+    g = Math.min(255, Math.max(0, g));
+    b = Math.min(255, Math.max(0, b));
+    a = Math.min(1, Math.max(0, a));
+
+    // Convert to hexadecimal
+    var hex = "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+
+    return hex;
+}
+
+// Function to delete row
+function deleteRow(button) {
+    var tbody = document.querySelector('#colorTable tbody');
+    var rows = tbody.querySelectorAll('tr');
+
+    // Prevent deleting if there's only one row
+    if (rows.length === 1) {
+        return;
+    }
+    // Find the parent row of the clicked button
+    var row = button.closest('tr');
+
+    // Remove the row from the table
+    if (row) {
+        row.remove();
+    }
+}
+
+// Add double click event listener to add new row
+var tbody = document.querySelector('#colorTable tbody');
+tbody.addEventListener('dblclick', function(event) {
+    if (event.target.tagName.toLowerCase() === 'td') {
+        var newRow = document.createElement('tr');
+        newRow.innerHTML = `
+            <td><input type="text" class="color-input" value="" oninput="updateColorInput(this)"></td>
+            <td><input type="number" min="0" max="100" value="0"></td>
+            <td><input type="color" class="color-picker" onchange="updateColor(this)" value="#ff8f0f"></td>
+            <td><button class="delete-button" onclick="deleteRow(this)">Delete</button></td>
+        `;
+        tbody.insertBefore(newRow, event.target.closest('tr').nextSibling);
+    }
+});
+
+function isValidHexColor(color) {
+    // Regular expression pattern for validating hex color (#RRGGBB or #RGB)
+    var hexColorPattern = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+
+    // Test the input color against the regex pattern
+    return hexColorPattern.test(color);
+}
+
+function isValidRGBAColor(color) {
+    // Regular expression pattern for validating RGBA color (rgba(0-255, 0-255, 0-255, 0-1))
+    var rgbaColorPattern = /^rgba?\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3}),\s*(0|1|0\.\d+)\)$/;
+
+    // Test the input color against the regex pattern
+    return rgbaColorPattern.test(color);
+}
+
+function getAllColorInputValuesAndValidate() {
+    var radioButton = document.getElementById("radioRgba");
+    var colorValues = [];
+    var table = document.getElementById("colorTable");
+    var validColor = true;
+
+    if (table) {
+        var colorInputs = table.querySelectorAll('.color-input');
+
+        colorInputs.forEach(function(input) {
+            var color = input.value.trim();
+            if (!radioButton.checked) {
+                if (!isValidHexColor(color) && color != "") {
+                validColor = false;
+            }
+            }else{
+                if (!isValidRGBAColor(color) && color != "") {
+                validColor = false;
+            }
+            }
+        });
+    }
+
+    return validColor;
+}
+    </script>
+
+</body>
+</html>
